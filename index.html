@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>식당 창업 손익분석기</title>
+<style>
+  *{box-sizing:border-box}
+  body{
+    margin:0;
+    font-family:"Noto Sans KR","Malgun Gothic",sans-serif;
+    color:#173b35;
+    background:#f7f3e9;
+  }
+  button,input,select{font:inherit}
+  .hero{
+    min-height:430px;
+    padding:42px 7% 90px;
+    background:
+      linear-gradient(90deg,rgba(255,251,240,.98) 0%,rgba(255,251,240,.88) 42%,rgba(255,251,240,.25) 72%),
+      radial-gradient(circle at 80% 25%,#dcebdc 0 8%,transparent 9%),
+      linear-gradient(135deg,#f7ead5,#dcebdc);
+    position:relative;
+    overflow:hidden;
+  }
+  .nav{
+    max-width:1180px;margin:auto;display:flex;align-items:center;justify-content:space-between
+  }
+  .logo{font-size:24px;font-weight:800;letter-spacing:-1px}
+  .nav span{margin-left:26px;font-size:14px;color:#46615b}
+  .hero-inner{max-width:1180px;margin:65px auto 0}
+  .eyebrow{font-size:16px;font-weight:700;color:#2d766b}
+  h1{font-size:54px;line-height:1.1;margin:12px 0;color:#123c35;letter-spacing:-3px}
+  .hero p{font-size:18px;line-height:1.7;margin:0;color:#46615b}
+  .badges{display:flex;gap:12px;margin-top:28px;flex-wrap:wrap}
+  .badge{
+    background:rgba(255,255,255,.78);border:1px solid #e4e0d5;
+    border-radius:30px;padding:11px 17px;font-size:14px;
+  }
+  .wrap{max-width:1100px;margin:-55px auto 70px;padding:0 18px;position:relative}
+  .panel{
+    background:#fffdf8;border:1px solid #e9e4d8;border-radius:24px;
+    box-shadow:0 16px 45px rgba(38,61,52,.10);padding:34px;
+  }
+  .section-title{font-size:27px;margin:0 0 5px;letter-spacing:-1px}
+  .section-desc{color:#71827d;margin:0 0 26px}
+  .form-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+  .field{
+    border:1px solid #e4e7e0;border-radius:17px;padding:18px;background:#fff;
+  }
+  .field:nth-child(3n+1){background:#fffaf0}
+  .field:nth-child(3n+2){background:#f3f9fb}
+  .field:nth-child(3n){background:#f3faf5}
+  .field label{display:block;font-weight:800;margin-bottom:3px}
+  .hint{font-size:12px;color:#77847f;margin-bottom:11px;min-height:17px}
+  .input-row{display:flex;align-items:center;gap:7px}
+  input,select{
+    width:100%;border:1px solid #d7ded9;background:#fff;border-radius:10px;
+    padding:11px 12px;outline:none;color:#183c36;
+  }
+  input:focus,select:focus{border-color:#3b9485;box-shadow:0 0 0 3px rgba(59,148,133,.10)}
+  .unit{font-size:13px;color:#62736e;white-space:nowrap}
+  .action{text-align:center;margin-top:25px}
+  .analyze-btn{
+    border:0;background:#258c7e;color:#fff;border-radius:40px;
+    padding:16px 45px;font-size:18px;font-weight:800;cursor:pointer;
+    box-shadow:0 8px 18px rgba(37,140,126,.25);
+  }
+  .analyze-btn:hover{background:#1e776b}
+  .result{display:none;margin-top:28px}
+  .result.show{display:block}
+  .report-head{
+    background:linear-gradient(120deg,#eef8f3,#f7fbf9);
+    border:1px solid #dcebe4;border-radius:20px;padding:25px;margin-bottom:18px
+  }
+  .report-head h2{margin:0 0 7px;font-size:26px}
+  .basis{display:inline-block;background:#fff;border-radius:20px;padding:8px 13px;font-size:13px;color:#61726c}
+  .metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:13px}
+  .metric{
+    border-radius:17px;padding:20px;background:#fff;border:1px solid #e4e8e4
+  }
+  .metric .label{font-weight:800;font-size:14px}
+  .metric .small{font-size:11px;color:#7b8883;margin-top:4px;min-height:15px}
+  .metric .value{font-size:27px;font-weight:900;margin-top:12px;letter-spacing:-1px}
+  .metric .sub{font-size:12px;color:#73807b;margin-top:4px}
+  .blue{background:#f1f7ff}.green{background:#f0faf5}.purple{background:#f7f3ff}
+  .orange{background:#fff8ed}.red{background:#fff3f3}
+  .chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:18px}
+  .chart-card{background:#fff;border:1px solid #e4e8e4;border-radius:20px;padding:22px}
+  .chart-card h3{margin:0 0 18px;font-size:18px}
+  .bar-chart{height:220px;display:flex;align-items:flex-end;gap:16px;border-bottom:1px solid #d9dfdb;padding:0 10px}
+  .bar-wrap{height:100%;flex:1;display:flex;flex-direction:column;justify-content:flex-end;align-items:center}
+  .bar{width:70%;min-height:4px;border-radius:8px 8px 0 0;background:#4d93d9;transition:.4s}
+  .bar.bep{background:#ed7777}.bar.cost{background:#8a78ca}.bar.fixed{background:#3caa8e}
+  .bar-num{font-size:12px;font-weight:800;margin-bottom:5px}
+  .bar-name{font-size:11px;color:#64736e;margin-top:7px;text-align:center}
+  .donut-area{display:flex;align-items:center;gap:22px;min-height:220px}
+  .donut{
+    width:150px;height:150px;border-radius:50%;
+    background:conic-gradient(#4d93d9 0 35%,#8a78ca 35% 58%,#3caa8e 58% 100%);
+    position:relative;flex:none;
+  }
+  .donut:after{content:"";position:absolute;inset:38px;background:#fff;border-radius:50%}
+  .legend{font-size:13px;line-height:1.8}
+  .legend-row{display:flex;gap:8px;align-items:center;margin:7px 0}
+  .dot{width:10px;height:10px;border-radius:50%;display:inline-block}
+  .insight-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:16px;margin-top:18px}
+  .insight,.notice{border-radius:20px;padding:23px}
+  .insight{background:#eef6ff;border:1px solid #dce8f6}
+  .notice{background:#f8faf8;border:1px solid #e3e9e5}
+  .insight h3,.notice h3{margin:0 0 13px}
+  .insight p{margin:7px 0;line-height:1.7}
+  .notice ul{margin:0;padding-left:18px;color:#63716c;line-height:1.8;font-size:13px}
+  .footer{text-align:center;color:#7b8782;font-size:12px;padding:0 20px 45px}
+  @media(max-width:850px){
+    .form-grid,.metrics{grid-template-columns:repeat(2,1fr)}
+    .chart-grid,.insight-grid{grid-template-columns:1fr}
+    h1{font-size:43px}
+  }
+  @media(max-width:560px){
+    .hero{padding:25px 5% 80px}
+    .nav span{display:none}
+    h1{font-size:37px}
+    .hero p{font-size:15px}
+    .wrap{padding:0 10px}
+    .panel{padding:20px}
+    .form-grid,.metrics{grid-template-columns:1fr}
+    .donut-area{flex-direction:column}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <nav class="nav">
+    <div class="logo">🍽️ 식당 창업 손익분석기</div>
+    <div><span>홈</span><span>분석하기</span><span>이용방법</span></div>
+  </nav>
+  <div class="hero-inner">
+    <div class="eyebrow">창업 전, 꼭 확인하세요!</div>
+    <h1>식당 창업<br>손익분석기</h1>
+    <p>예상 매출과 비용을 계산하여<br>손익분기점과 예상 영업이익을 확인해 보세요.</p>
+    <div class="badges">
+      <div class="badge">🧮 간단한 입력</div>
+      <div class="badge">📊 한눈에 보는 분석</div>
+      <div class="badge">💡 현실적인 손익 확인</div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="panel">
+    <h2 class="section-title">📋 분석 정보 입력하기</h2>
+    <p class="section-desc">아래 항목을 입력하면 식당의 예상 손익을 계산합니다.</p>
+
+    <div class="form-grid">
+      <div class="field">
+        <label>👥 일 고객수</label>
+        <div class="hint">(하루에 올 것으로 예상하는 손님 수)</div>
+        <div class="input-row"><input id="customers" type="number" value="60" min="0"><span class="unit">명</span></div>
+      </div>
+      <div class="field">
+        <label>₩ 평균 객단가</label>
+        <div class="hint">(손님 1명이 평균적으로 쓰는 금액)</div>
+        <div class="input-row"><input id="ticket" type="number" value="10000" min="0"><span class="unit">원</span></div>
+      </div>
+      <div class="field">
+        <label>📅 월 영업일수</label>
+        <div class="hint">(한 달 동안 영업하는 일수)</div>
+        <div class="input-row"><input id="days" type="number" value="26" min="1" max="31"><span class="unit">일</span></div>
+      </div>
+      <div class="field">
+        <label>🥘 식재료 원가율</label>
+        <div class="hint">(식재료에 쓰이는 비용 비율)</div>
+        <div class="input-row">
+          <select id="food"><option value="">선택하세요</option><option value="25">25%</option><option value="30" selected>30%</option><option value="35">35%</option><option value="40">40%</option></select><span class="unit">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>💳 기타 변동비율</label>
+        <div class="hint">(카드수수료·포장비·소모품 등)</div>
+        <div class="input-row">
+          <select id="variable"><option value="">선택하세요</option><option value="5" selected>5%</option><option value="7">7%</option><option value="10">10%</option></select><span class="unit">%</span>
+        </div>
+      </div>
+      <div class="field">
+        <label>🏠 월 임대료</label>
+        <div class="hint">(매달 나가는 임대료)</div>
+        <div class="input-row"><input id="rent" type="number" value="150" min="0"><span class="unit">만원</span></div>
+      </div>
+      <div class="field">
+        <label>👨‍🍳 월 인건비</label>
+        <div class="hint">(직원 급여 등)</div>
+        <div class="input-row"><input id="labor" type="number" value="300" min="0"><span class="unit">만원</span></div>
+      </div>
+      <div class="field">
+        <label>🧾 월 기타 고정비</label>
+        <div class="hint">(전기·가스·통신·보험·렌탈 등)</div>
+        <div class="input-row"><input id="fixed" type="number" value="100" min="0"><span class="unit">만원</span></div>
+      </div>
+    </div>
+
+    <div class="action">
+      <button class="analyze-btn" onclick="analyze()">🔍 손익 분석하기 →</button>
+    </div>
+  </section>
+
+  <section id="result" class="result">
+    <div class="report-head">
+      <h2>📊 분석 결과 요약</h2>
+      <span class="basis">분석 기준 · 입력값 기준 · 세전 · 감가상각비·대출이자 반영 전</span>
+    </div>
+
+    <div class="metrics">
+      <div class="metric blue"><div class="label">👥 일 고객수</div><div class="small">(하루 예상 손님 수)</div><div class="value" id="rCustomers">-</div></div>
+      <div class="metric green"><div class="label">💰 일 예상 매출</div><div class="small">(하루 예상 매출)</div><div class="value" id="rDaily">-</div></div>
+      <div class="metric purple"><div class="label">📅 월 예상 매출</div><div class="small">(한 달 예상 매출)</div><div class="value" id="rMonthly">-</div></div>
+      <div class="metric orange"><div class="label">📦 총 변동비</div><div class="small">(매출에 따라 늘어나는 비용)</div><div class="value" id="rVariable">-</div><div class="sub" id="rVariablePct"></div></div>
+      <div class="metric blue"><div class="label">🏠 총 고정비</div><div class="small">(매달 비교적 일정한 비용)</div><div class="value" id="rFixed">-</div><div class="sub" id="rFixedPct"></div></div>
+      <div class="metric green"><div class="label">💵 월 영업이익</div><div class="small">(비용을 빼고 남는 금액)</div><div class="value" id="rProfit">-</div><div class="sub" id="rProfitPct"></div></div>
+      <div class="metric red"><div class="label">⚖️ 월 손익분기점</div><div class="small">(적자가 나지 않는 월 매출)</div><div class="value" id="rBep">-</div></div>
+      <div class="metric purple"><div class="label">📍 일 손익분기점</div><div class="small">(하루에 필요한 매출)</div><div class="value" id="rDailyBep">-</div></div>
+    </div>
+
+    <div class="chart-grid">
+      <div class="chart-card">
+        <h3>📈 매출과 손익분기점 비교</h3>
+        <div class="bar-chart">
+          <div class="bar-wrap"><div class="bar-num" id="barSalesNum">-</div><div class="bar" id="barSales"></div><div class="bar-name">월 예상 매출</div></div>
+          <div class="bar-wrap"><div class="bar-num" id="barBepNum">-</div><div class="bar bep" id="barBep"></div><div class="bar-name">월 손익분기점</div></div>
+          <div class="bar-wrap"><div class="bar-num" id="barVarNum">-</div><div class="bar cost" id="barVar"></div><div class="bar-name">총 변동비</div></div>
+          <div class="bar-wrap"><div class="bar-num" id="barFixedNum">-</div><div class="bar fixed" id="barFixed"></div><div class="bar-name">총 고정비</div></div>
+        </div>
+      </div>
+
+      <div class="chart-card">
+        <h3>🥧 비용 구성 비율</h3>
+        <div class="donut-area">
+          <div class="donut" id="donut"></div>
+          <div class="legend">
+            <div class="legend-row"><i class="dot" style="background:#4d93d9"></i> 변동비 <b id="legendVar">-</b></div>
+            <div class="legend-row"><i class="dot" style="background:#8a78ca"></i> 고정비 <b id="legendFixed">-</b></div>
+            <div class="legend-row"><i class="dot" style="background:#3caa8e"></i> 영업이익 <b id="legendProfit">-</b></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="insight-grid">
+      <div class="insight">
+        <h3>💡 핵심 분석</h3>
+        <div id="insightText">분석 결과가 여기에 표시됩니다.</div>
+      </div>
+      <div class="notice">
+        <h3>ⓘ 참고사항</h3>
+        <ul>
+          <li>입력한 예상값을 기준으로 계산한 결과입니다.</li>
+          <li>월 영업이익은 세전이며 감가상각비·대출이자 등을 반영하지 않았습니다.</li>
+          <li>예상 고객수와 객단가에 따라 결과가 크게 달라질 수 있습니다.</li>
+          <li>이 계산기는 식당의 성공·실패를 판단하는 도구가 아닙니다.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+</main>
+
+<div class="footer">식당 창업 손익분석기 · 입력값을 바탕으로 손익 구조를 계산합니다.</div>
+
+<script>
+function num(id){
+  return Number(document.getElementById(id).value) || 0;
+}
+function wonToManwon(won){
+  return won / 10000;
+}
+function fmt(n){
+  return Math.round(n).toLocaleString('ko-KR');
+}
+function pct(n){
+  return (n * 100).toFixed(0) + '%';
+}
+function analyze(){
+  const customers = num('customers');
+  const ticketWon = num('ticket');
+  const days = num('days');
+  const food = num('food') / 100;
+  const variableOther = num('variable') / 100;
+  const rent = num('rent');
+  const labor = num('labor');
+  const fixedOther = num('fixed');
+
+  if(customers <= 0 || ticketWon <= 0 || days <= 0 || (food + variableOther) >= 1){
+    alert('입력값을 확인해주세요. 변동비율 합계는 100% 미만이어야 합니다.');
+    return;
+  }
+
+  const dailyWon = customers * ticketWon;
+  const monthlyMan = wonToManwon(dailyWon) * days;
+  const variableRate = food + variableOther;
+  const variableMan = monthlyMan * variableRate;
+  const fixedMan = rent + labor + fixedOther;
+  const profitMan = monthlyMan - variableMan - fixedMan;
+  const bepMan = fixedMan / (1 - variableRate);
+  const dailyBepMan = bepMan / days;
+
+  document.getElementById('rCustomers').textContent = fmt(customers) + '명';
+  document.getElementById('rDaily').textContent = fmt(wonToManwon(dailyWon)) + '만원';
+  document.getElementById('rMonthly').textContent = fmt(monthlyMan) + '만원';
+  document.getElementById('rVariable').textContent = fmt(variableMan) + '만원';
+  document.getElementById('rVariablePct').textContent = '(' + pct(variableRate) + ')';
+  document.getElementById('rFixed').textContent = fmt(fixedMan) + '만원';
+  document.getElementById('rFixedPct').textContent = monthlyMan ? '(' + pct(fixedMan/monthlyMan) + ')' : '';
+  document.getElementById('rProfit').textContent = fmt(profitMan) + '만원';
+  document.getElementById('rProfitPct').textContent = monthlyMan ? '(' + pct(profitMan/monthlyMan) + ')' : '';
+  document.getElementById('rBep').textContent = fmt(bepMan) + '만원';
+  document.getElementById('rDailyBep').textContent = fmt(dailyBepMan) + '만원';
+
+  const max = Math.max(monthlyMan, bepMan, variableMan, fixedMan, 1);
+  ['barSales','barBep','barVar','barFixed'].forEach((id,i)=>{
+    const vals=[monthlyMan,bepMan,variableMan,fixedMan];
+    document.getElementById(id).style.height = Math.max(3, vals[i]/max*175) + 'px';
+  });
+  document.getElementById('barSalesNum').textContent = fmt(monthlyMan);
+  document.getElementById('barBepNum').textContent = fmt(bepMan);
+  document.getElementById('barVarNum').textContent = fmt(variableMan);
+  document.getElementById('barFixedNum').textContent = fmt(fixedMan);
+
+  const total = Math.max(monthlyMan,1);
+  const varPct = variableMan/total*100;
+  const fixedPct = fixedMan/total*100;
+  const profitPct = Math.max(profitMan/total*100,0);
+  const safeProfitPct = Math.max(0,100-varPct-fixedPct);
+  document.getElementById('donut').style.background =
+    `conic-gradient(#4d93d9 0 ${varPct}%,#8a78ca ${varPct}% ${varPct+fixedPct}%,#3caa8e ${varPct+fixedPct}% 100%)`;
+  document.getElementById('legendVar').textContent = fmt(variableMan)+'만원';
+  document.getElementById('legendFixed').textContent = fmt(fixedMan)+'만원';
+  document.getElementById('legendProfit').textContent = fmt(Math.max(profitMan,0))+'만원';
+
+  const insight = document.getElementById('insightText');
+  if(profitMan >= 0){
+    if(monthlyMan >= bepMan){
+      insight.innerHTML =
+        `<p>예상 매출은 손익분기점보다 <b>${fmt(monthlyMan-bepMan)}만원</b> 높게 계산됩니다.</p>
+         <p>월 예상 영업이익은 <b>${fmt(profitMan)}만원</b>입니다.</p>`;
+    }else{
+      insight.innerHTML =
+        `<p>예상 매출이 손익분기점보다 <b>${fmt(bepMan-monthlyMan)}만원</b> 부족합니다.</p>
+         <p>현재 입력 조건에서는 월 영업이익이 <b>${fmt(profitMan)}만원</b>으로 계산됩니다.</p>`;
+    }
+  }else{
+    insight.innerHTML =
+      `<p>현재 예상 매출에서는 비용이 매출보다 <b>${fmt(Math.abs(profitMan))}만원</b> 많습니다.</p>
+       <p>손익분기점까지 매출을 추가로 확보해야 합니다.</p>`;
+  }
+
+  document.getElementById('result').classList.add('show');
+  document.getElementById('result').scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+analyze();
+</script>
+</body>
+</html>
